@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        #map {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: -1;
+            width: 500px;
+            height: 500px;
+            background: rgba(29, 175, 0, 0.5);
+        }
+        
+        #map div {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+        }
+        
+        table {
+            position: absolute;
+            z-index: 0;
+            width: 501px;
+            height: 501px;
+            border-right: 1px solid rgb(0, 0, 0);
+            border-bottom: 1px solid black;
+        }
+        
+        td {
+            width: 49px;
+            height: 49px;
+            margin: 0;
+            padding: 0;
+            border-top: 1px solid black;
+            border-left: 1px solid rgb(0, 0, 0);
+        }
+        
+        #annotation {
+            position: absolute;
+            left: 10px;
+            top: 510px;
+        }
+        
+        #annotation table {
+            height: 60px;
+            width: 200px;
+            border: 3px solid black;
+        }
+        
+        #annotation table td {
+            border: none;
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root">
+        <table cellspacing='0' cellpadding='0'>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+
+        <div id='map'>
+        </div>
+        <div id='annotation'>
+            <h2>红色是蛇,绿色是食物</h2>
+            <h2>方向键开始,空格暂停</h2>
+            <table cellspacing='0' cellpadding='0'>
+                <tr>
+                    <td>
+                        <h2>分数:</h2>
+                    </td>
+                    <td>
+                        <h2 id='score'></h2>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+<script>
+    let snake = []; //放置所有身体
+    let snaketail = '';
+    let gamescore = 0;
+    let maxscore = 0;
+    score.innerText = gamescore; //初始化游戏分数
+    let map = document.getElementById('map'); //知识点__01_document.getElementById('map')用于收集Id元素
+    //函数01_创建蛇头和食物
+    let create = function(boxcolor) {
+        let div = document.createElement('div'); //知识点__02_document.createElement('div')用于创建DOM元素
+        div.style.backgroundColor = boxcolor;
+        div.style.left = parseInt(Math.random() * 10) * 50 + 'px';
+        div.style.top = parseInt(Math.random() * 10) * 50 + 'px';
+
+        map.appendChild(div); //知识点__03_map.appendChild(div)用于将DOM元素添加到以获取的map元素上
+        return div;
+    }
+    let shead = create('rgb(100,0,0)');
+    let sfood = create('rgb(0,82,14)');
+    //函数_判断食物和身体重合.
+    let judgefoodinbody = function() {
+            if (snake.length > 0) {
+                for (let i = 0; i < snake.length; i++) {
+                    if (parseInt(snake[i].style.top) === parseInt(sfood.style.top) && parseInt(snake[i].style.left) === parseInt(sfood.style.left)) {
+                        //console.log('食物和身体重合了');
+                        foodinbody();
+                    }
+                }
+            }
+        }
+        //函数_重合后处理
+    let foodinbody = function() {
+        sfood.style.left = parseInt(Math.random() * 10) * 50 + 'px';
+        sfood.style.top = parseInt(Math.random() * 10) * 50 + 'px';
+        judgefoodinbody();
+    }
+
+
+    shead.direction = '';
+    //函数02_根据蛇头移动方向移动蛇头div
+
+    let move = function() {
+        //头有方向的时候,才运行,用于暂停
+        if (shead.direction !== '') {
+            //遍历移动蛇身
+            if (snake.length !== 0) {
+                for (let i = snake.length - 1; i >= 0; i--) {
+                    switch (snake[i].direction) {
+                        case 'north':
+                            snake[i].style.top = parseInt(snake[i].style.top) - 50 + 'px'; //注意_对象.style.left会返回一个字符串,需要用parseInt变成整数.
+                            break
+                        case 'west':
+                            snake[i].style.left = parseInt(snake[i].style.left) + 50 + 'px';
+                            break
+                        case 'south':
+                            snake[i].style.top = parseInt(snake[i].style.top) + 50 + 'px';
+                            break
+                        case 'east':
+                            snake[i].style.left = parseInt(snake[i].style.left) - 50 + 'px';
+                            break
+                    }
+
+                    if (i === 0) {
+                        snake[i].direction = shead.direction;
+                    } else {
+                        snake[i].direction = snake[i - 1].direction;
+                    }
+                }
+            }
+            //根据蛇头方向的值移动蛇头
+            switch (shead.direction) {
+                case '':
+                    break
+                case 'north':
+                    shead.style.top = parseInt(shead.style.top) - 50 + 'px'; //注意_对象.style.left会返回一个字符串,需要用parseInt变成整数.
+                    break
+                case 'west':
+                    shead.style.left = parseInt(shead.style.left) + 50 + 'px';
+                    break
+                case 'south':
+                    shead.style.top = parseInt(shead.style.top) + 50 + 'px';
+                    break
+                case 'east':
+                    shead.style.left = parseInt(shead.style.left) - 50 + 'px';
+                    break
+            }
+            //碰撞检测
+            if (shead.style.top === sfood.style.top && shead.style.left === sfood.style.left) {
+                sfood.style.left = parseInt(Math.random() * 10) * 50 + 'px';
+                sfood.style.top = parseInt(Math.random() * 10) * 50 + 'px';
+                //碰撞块,创建身体
+                let body = create('rgb(170,0,0');
+                gamescore += 1; //更新游戏分数
+                score.innerText = gamescore;
+                //获得蛇碰撞时,获得最后一块的信息
+                if (snake.length === 0) {
+                    snaketail = shead;
+                } else {
+                    snaketail = snake[snake.length - 1];
+
+                }
+                switch (snaketail.direction) {
+                    case 'north':
+                        body.style.top = parseInt(snaketail.style.top) + 50 + 'px';
+                        body.style.left = snaketail.style.left;
+                        break
+                    case 'west':
+                        body.style.top = snaketail.style.top;
+                        body.style.left = parseInt(snaketail.style.left) - 50 + 'px';
+                        break
+                    case 'south':
+                        body.style.left = snaketail.style.left;
+                        body.style.top = parseInt(snaketail.style.top) - 50 + 'px';
+                        break
+                    case 'east':
+                        body.style.top = snaketail.style.top;
+                        body.style.left = parseInt(snaketail.style.left) + 50 + 'px';
+                        break
+                }
+                body.direction = snaketail.direction;
+                snake.push(body);
+                //打印尾部结点
+                //console.log(snaketail);
+            }
+            //死亡检测
+            //撞墙死
+            if (parseInt(shead.style.top) < 0 || parseInt(shead.style.left) < 0 || parseInt(shead.style.top) > 450 || parseInt(shead.style.left) > 450) {
+                dead();
+                alert(`
+                你撞死了
+                得分${gamescore}
+                最高分${maxscore}
+                `);
+                gamescore = 0; //更新游戏分数
+                score.innerText = gamescore;
+            }
+            //咬身体死
+            if (snake.length > 0) {
+                for (let i = 0; i < snake.length; i++) {
+                    if (parseInt(snake[i].style.top) === parseInt(shead.style.top) && parseInt(snake[i].style.left) === parseInt(shead.style.left)) {
+                        dead();
+                        alert(`
+                你死于咬到自己
+                得分${gamescore}
+                最高分${maxscore}
+                        `);
+                        gamescore = 0; //更新游戏分数
+                        score.innerText = gamescore;
+                    }
+                }
+
+            }
+            //食物重复检测
+            judgefoodinbody();
+        }
+    }
+
+    //函数03_判断按键改变蛇头方向的变量
+    document.onkeydown = function(e) {
+
+            switch (e.keyCode) {
+                case 38:
+                    if (shead.direction === 'south' && snake.length !== 0) {
+                        break
+                    }
+                    shead.direction = 'north';
+                    press();
+                    break
+                case 39:
+                    if (shead.direction === 'east' && snake.length !== 0) {
+                        break
+                    }
+                    shead.direction = 'west';
+                    press();
+                    break
+                case 40:
+                    if (shead.direction === 'north' && snake.length !== 0) {
+                        break
+                    }
+                    shead.direction = 'south';
+                    press();
+                    break
+                case 37:
+                    if (shead.direction === 'west' && snake.length !== 0) {
+                        break
+                    }
+                    shead.direction = 'east';
+                    press();
+                    break
+                case 32:
+                    clearInterval(snakemove);
+                    shead.direction = '';
+                    snakemove = setInterval(move, 250);
+                    break
+
+            }
+        }
+        //函数_死后头不动,身体消失
+    let dead = function() {
+        clearInterval(snakemove);
+        //死了之后头停住,而不是出去
+        switch (shead.direction) {
+            case 'north':
+                shead.style.top = parseInt(shead.style.top) + 50 + 'px';
+                break
+            case 'west':
+                shead.style.left = parseInt(shead.style.left) - 50 + 'px';
+                break
+            case 'south':
+                shead.style.top = parseInt(shead.style.top) - 50 + 'px';
+                break
+            case 'east':
+                shead.style.left = parseInt(shead.style.left) + 50 + 'px';
+                break
+        }
+        //死了之后身体消失
+        for (let i = 0; i < snake.length; i++) {
+            let div = map.lastChild;
+            map.removeChild(div);
+        }
+        snake = [];
+        shead.direction = '';
+        mscore();
+    }
+    let snakemove = setInterval(move, 250);
+    //函数_按键瞬间前进或转向
+    let press = function() {
+            move();
+            clearInterval(snakemove);
+            snakemove = setInterval(move, 250);
+
+
+        }
+        //函数_最高分
+    let mscore = function() {
+        if (maxscore < gamescore) {
+            maxscore = gamescore;
+        }
+    }
+</script>
+
+</html>
