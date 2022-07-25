@@ -212,8 +212,8 @@
 <script>
     let snake = []; //放置所有身体
     let snaketail = '';
-    let gamescore = 0;
-    let maxscore = 0;
+    let gamescore = 0; //游戏分数
+    let maxscore = 0; //最高分数
     score.innerText = gamescore; //初始化游戏分数
     let map = document.getElementById('map'); //知识点__01_document.getElementById('map')用于收集Id元素
     //函数01_创建蛇头和食物
@@ -368,45 +368,47 @@
 
     //函数03_判断按键改变蛇头方向的变量
     document.onkeydown = function(e) {
+        switch (e.keyCode) {
+            case 38:
+                if (shead.direction === 'south' && snake.length !== 0) {
+                    break
+                }
+                shead.direction = 'north';
+                press();
+                break
+            case 39:
+                if (shead.direction === 'east' && snake.length !== 0) {
+                    break
+                }
+                shead.direction = 'west';
+                press();
+                break
+            case 40:
+                if (shead.direction === 'north' && snake.length !== 0) {
+                    break
+                }
+                shead.direction = 'south';
+                press();
+                break
+            case 37:
+                if (shead.direction === 'west' && snake.length !== 0) {
+                    break
+                }
+                shead.direction = 'east';
+                press();
+                break
+            case 32:
+                clearInterval(snakemove);
+                shead.direction = '';
+                snakemove = setInterval(move, 250);
+                break
 
-            switch (e.keyCode) {
-                case 38:
-                    if (shead.direction === 'south' && snake.length !== 0) {
-                        break
-                    }
-                    shead.direction = 'north';
-                    press();
-                    break
-                case 39:
-                    if (shead.direction === 'east' && snake.length !== 0) {
-                        break
-                    }
-                    shead.direction = 'west';
-                    press();
-                    break
-                case 40:
-                    if (shead.direction === 'north' && snake.length !== 0) {
-                        break
-                    }
-                    shead.direction = 'south';
-                    press();
-                    break
-                case 37:
-                    if (shead.direction === 'west' && snake.length !== 0) {
-                        break
-                    }
-                    shead.direction = 'east';
-                    press();
-                    break
-                case 32:
-                    clearInterval(snakemove);
-                    shead.direction = '';
-                    snakemove = setInterval(move, 250);
-                    break
-
-            }
         }
-        //函数_死后头不动,身体消失
+    }
+
+
+
+    //函数_死后头不动,身体消失
     let dead = function() {
         clearInterval(snakemove);
         //死了之后头停住,而不是出去
@@ -433,16 +435,17 @@
         shead.direction = '';
         mscore();
     }
+
     let snakemove = setInterval(move, 250);
     //函数_按键瞬间前进或转向
     let press = function() {
-            move();
-            clearInterval(snakemove);
-            snakemove = setInterval(move, 250);
+        move();
+        clearInterval(snakemove);
+        snakemove = setInterval(move, 250);
 
+    }
 
-        }
-        //函数_最高分
+    //函数_最高分
     let mscore = function() {
         if (maxscore < gamescore) {
             maxscore = gamescore;
